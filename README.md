@@ -1,2 +1,2 @@
 # pbs-client-dotnet
-.Net Implementatio of the Proxmox Backup API
+.Net Implementation of the Proxmox Backup API
