@@ -13,7 +13,19 @@
     <Copyright>Maximilian Kenfenheuer</Copyright>
     <Description>.Net Implementation of the Proxmox Backup API. 
 Used to store backup data on a Proxmox Backup server.</Description>
+    <FileVersion>1.0.1.1</FileVersion>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <PackageTags>proxmox,pbs,backup</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.0.1</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
