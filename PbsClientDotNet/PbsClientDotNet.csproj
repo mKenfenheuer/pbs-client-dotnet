@@ -1,10 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/mKenfenheuer/pbs-client-dotnet</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/mKenfenheuer/pbs-client-dotnet</PackageProjectUrl>
+    <Copyright>Maximilian Kenfenheuer</Copyright>
+    <Description>.Net Implementation of the Proxmox Backup API. 
+Used to store backup data on a Proxmox Backup server.</Description>
   </PropertyGroup>
 
   <ItemGroup>

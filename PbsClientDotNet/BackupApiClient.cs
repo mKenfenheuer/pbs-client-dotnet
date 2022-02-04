@@ -68,7 +68,7 @@ namespace PbsClientDotNet
             if (otp != null)
                 data.Add("otp", otp);
 
-            HttpResponseMessage response = await _httpClient.PostAsync($"/api2/json/access/ticket", new FormUrlEncodedContent(data)).TimeoutAfter(TimeSpan.FromSeconds(2));
+            HttpResponseMessage response = await _httpClient.PostAsync($"/api2/json/access/ticket", new FormUrlEncodedContent(data));
             var payload = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -330,24 +330,35 @@ namespace PbsClientDotNet
         public async Task<bool> AppendChunksToFixedIndex(int writer_id)
         {
             var info = _fixedIndexInformation[writer_id];
+
             HeaderField[] headers = new HeaderField[]
             {
                 new HeaderField { Name = "content-type", Value = "application/json" },
             };
 
-            string json = JsonConvert.SerializeObject(new AppendRequest()
+            var request = new AppendRequest()
             {
-                DigestList = info.Digests,
-                OffsetList = info.Offsets,
+                DigestList = info.UnappendedDigests,
+                OffsetList = info.UnappendedOffsets,
                 Wid = writer_id,
-            });
+            };
 
+            if (request.DigestList.Count == 0 && request.OffsetList.Count == 0)
+                return true;
+
+            string json = JsonConvert.SerializeObject(request);
 
             // Wait for response headers
             var response = await MakeHttp2RequestAsync("PUT", "/fixed_index", headers, Encoding.UTF8.GetBytes(json));
 
             if (!response.Success)
                 throw new HttpRequestException("Could not append chunks to index! Response: \r\n" + response.ToString());
+
+            foreach (var digest in request.DigestList)
+                info.UnappendedDigests.Remove(digest);
+
+            foreach (var offset in request.OffsetList)
+                info.UnappendedOffsets.Remove(offset);
 
             return response.Success;
         }
@@ -437,19 +448,26 @@ namespace PbsClientDotNet
             };
 
             var info = _dynamicIndexInformation[writer_id];
-            string json = JsonConvert.SerializeObject(new AppendRequest()
+            var request = new AppendRequest()
             {
-                DigestList = info.Digests,
-                OffsetList = info.Offsets,
+                DigestList = info.UnappendedDigests,
+                OffsetList = info.UnappendedOffsets,
                 Wid = writer_id,
-            });
+            };
 
+            if (request.DigestList.Count == 0 && request.OffsetList.Count == 0)
+                return true;
+
+            string json = JsonConvert.SerializeObject(request);
 
             // Wait for response headers
             var response = await MakeHttp2RequestAsync("PUT", "/dynamic_index", headers, Encoding.UTF8.GetBytes(json));
 
             if (!response.Success)
                 throw new HttpRequestException("Could not append chunks to index! Response: \r\n" + response.ToString());
+
+            info.UnappendedDigests.Clear();
+            info.UnappendedOffsets.Clear();
 
             return response.Success;
         }
