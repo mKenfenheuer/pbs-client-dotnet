@@ -13,11 +13,11 @@
     <Copyright>Maximilian Kenfenheuer</Copyright>
     <Description>.Net Implementation of the Proxmox Backup API. 
 Used to store backup data on a Proxmox Backup server.</Description>
-    <FileVersion>1.0.1.1</FileVersion>
-    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
     <PackageTags>proxmox,pbs,backup</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

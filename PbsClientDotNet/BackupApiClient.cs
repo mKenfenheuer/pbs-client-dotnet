@@ -22,6 +22,7 @@ namespace PbsClientDotNet
         Dictionary<int, IndexWriterInformation> _fixedIndexInformation = new Dictionary<int, IndexWriterInformation>();
         Dictionary<int, IndexWriterInformation> _dynamicIndexInformation = new Dictionary<int, IndexWriterInformation>();
 
+        TcpClient _client;
         Connection _connection;
         BackupIndex _index;
         IStream _http2Stream;
@@ -137,12 +138,12 @@ namespace PbsClientDotNet
                 .Build();
 
             // Create a TCP connection
-            var tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(uri.Host, uri.Port);
-            tcpClient.Client.NoDelay = true;
+            _client = new TcpClient();
+            await _client.ConnectAsync(uri.Host, uri.Port);
+            _client.Client.NoDelay = true;
 
             // Create HTTP/2 stream abstraction on top of the socket
-            SslStream stream = new SslStream(tcpClient.GetStream(), true, RemoteCertificateValidationCallback);
+            SslStream stream = new SslStream(_client.GetStream(), true, RemoteCertificateValidationCallback);
             await stream.AuthenticateAsClientAsync(uri.Host);
 
             var wrappedStreams = stream.CreateStreams();
@@ -354,11 +355,8 @@ namespace PbsClientDotNet
             if (!response.Success)
                 throw new HttpRequestException("Could not append chunks to index! Response: \r\n" + response.ToString());
 
-            foreach (var digest in request.DigestList)
-                info.UnappendedDigests.Remove(digest);
-
-            foreach (var offset in request.OffsetList)
-                info.UnappendedOffsets.Remove(offset);
+            info.UnappendedDigests.Clear();
+            info.UnappendedOffsets.Clear();
 
             return response.Success;
         }
@@ -483,6 +481,9 @@ namespace PbsClientDotNet
 
             if (!response.Success)
                 throw new HttpRequestException("Could not finish backup! Response: \r\n" + response.ToString());
+
+            //await _connection.CloseNow();
+            _client.Close();
 
             return response.Success;
         }
